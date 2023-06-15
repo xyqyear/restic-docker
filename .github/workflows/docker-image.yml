@@ -47,15 +47,16 @@ jobs:
           fi
       - name: Update RESTIC_LAST_TAG var
         if: steps.download.outputs.TAG_CHANGED == '1'
+        env:
+          PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
           curl -L \
             -X PATCH \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PERSONAL_TOKEN }}"\
+            -H "Authorization: Bearer $PERSONAL_TOKEN"\
             -H "X-GitHub-Api-Version: ${{ env.GITHUB_API_VERSION }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/variables/RESTIC_LAST_TAG \
             -d '{"name":"RESTIC_LAST_TAG","value":"${{ steps.download.outputs.CURRENT_TAG }}"}'
-
       - name: Set up QEMU
         if: steps.download.outputs.TAG_CHANGED == '1'
         uses: docker/setup-qemu-action@v2
