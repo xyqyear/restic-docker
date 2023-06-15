@@ -9,6 +9,9 @@ on:
 env:
   GITHUB_API_VERSION: 2022-11-28
 
+permissions:
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,7 +51,7 @@ jobs:
           curl -L \
             -X PATCH \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
+            -H "Authorization: Bearer ${{ secrets.PERSONAL_TOKEN }}"\
             -H "X-GitHub-Api-Version: ${{ env.GITHUB_API_VERSION }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/variables/RESTIC_LAST_TAG \
             -d '{"name":"RESTIC_LAST_TAG","value":"${{ steps.download.outputs.CURRENT_TAG }}"}'
