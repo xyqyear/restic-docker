@@ -3,6 +3,8 @@ name: Docker Image CI
 on:
   schedule:
     - cron: "0 0 * * *"
+  # dispatch
+  workflow_dispatch:
 
 env:
   GITHUB_API_VERSION: 2022-11-28
@@ -16,12 +18,14 @@ jobs:
       - name: Download latest restic binary
         id: download
         run: |
-          export URL="https://api.github.com/repos/restic/restic/releases/latest"
+          set -eux
 
           JSON_RESPONSE=$(curl -s \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "X-GitHub-Api-Version: ${{ env.GITHUB_API_VERSION }}" $URL)
+            -H "X-GitHub-Api-Version: $GITHUB_API_VERSION" \
+            https://api.github.com/repos/restic/restic/releases/latest)
+
           CURRENT_TAG=$(echo $JSON_RESPONSE | jq -r '.tag_name' | cut -c 2-)
 
           if [ "$CURRENT_TAG" != "${{ vars.RESTIC_LAST_TAG }}" ]; then
